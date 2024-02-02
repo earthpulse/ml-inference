@@ -1,0 +1,4 @@
+eotdl
+rasterio
+onnxruntime
+numpy
