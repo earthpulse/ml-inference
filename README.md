@@ -8,5 +8,5 @@ A docker image has been created and tested using:
 ```
 
 ```bash
-docker run --name ml-inference -p 8000:8000 ml-inference
+ docker run --name ml-inference -p 8000:8000 ml-inference
 ```
