@@ -4,6 +4,8 @@ WORKDIR /api1
 
 COPY . /api1
 
+COPY /Users/judith/.cache/eotdl/creds.json ~/.cache/eotdl/creds.json
+
 RUN pip install --no-cache-dir -r requirements.txt
 
 EXPOSE 8000
