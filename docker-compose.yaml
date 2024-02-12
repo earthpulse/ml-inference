@@ -1,0 +1,17 @@
+version: "3"
+
+services:
+  ml-inference:
+    build: api
+    image: ml-inference
+    container_name: ml-inference
+    ports:
+      - 8000:8000
+    volumes:
+      - ./api:/app/api
+      - ./tmp:/tmp
+    environment:
+      - EOTDL_DOWNLOAD_PATH=/tmp
+    env_file: 
+      - .env
+    command: uvicorn main:app --host 0.0.0.0 --reload --port 8000
