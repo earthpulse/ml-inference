@@ -2,13 +2,16 @@ version: "3"
 
 services:
   ml-inference:
-    build: api
+    build:
+      context: ./api  
+      dockerfile: Dockerfile  
     image: ml-inference
     container_name: ml-inference
+    platform: linux/amd64
     ports:
       - 8000:8000
     volumes:
-      - ./api:/app/api
+      - ./api:/app
       - ./tmp:/tmp
     environment:
       - EOTDL_DOWNLOAD_PATH=/tmp
