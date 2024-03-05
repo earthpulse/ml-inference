@@ -9,63 +9,37 @@ import glob
 
 app = FastAPI()
 
-# @app.post("/")
-# async def inference(model_name: str, img_file: UploadFile = File(...)):
-
-
-@app.get("/{model}")
-def inference(model: str):
+@app.post("/{model}")
+async def inference(model: str, img_file: UploadFile = File(...)):
     print("hola")
     # Read the data from the file in memory
-    # contents = await img_file.read()
+    contents = await img_file.read()
 
     # Use MemoryFile from rasterio to open the file directly from memory
-    # with MemoryFile(contents) as memfile:
-    #     with memfile.open() as dataset:
-    #         # Convert the file content to a numpy array
-    #         img_array = dataset.read()
-
-    # model_path = os.getnv["EOTDL_DOWNLOAD_PATH"] + "/" + model_name
-
-    # Check if the model doesn't exist in the cache directory
-    # if not os.path.exists(model_path):
-    #     os.makedirs(model_path)
-    #     download_path = download_model(model_name, path=model_path)
+    with MemoryFile(contents) as memfile:
+        with memfile.open() as dataset:
+            # Convert the file content to a numpy array
+            img_array = dataset.read()
+            print(img_array.shape)
 
     try:
-        download_path = download_model(model)
-        return download_path
+        download_path = download_model(model, force=True)
     except Exception as e:
         raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail=str(e))
 
-    # # Set the base directory where to search for the .onnx file
-    # base_path = os.path.expanduser(f'~/.cache/models/{model_name}')
+    # TODO: It seems that the model was not exported correctly to accept a random batch size (it only works with a batch size of 25)
+    batch = np.array(25*[img_array.astype(np.float32)])
+    print(batch.shape)
 
-    # # Use glob to find directories containing the 'model.onnx' file
-    # # The pattern '**' matches any number of directories including nested ones,
-    # # and 'model.onnx' is the filename we are looking for
-    # pattern = os.path.join(base_path, '**', 'v1', 'model.onnx')
+    print(download_path)
+    file_path = os.path.join(download_path, 'model.onnx')
+    
+    # Execute model
+    ort_session = onnxruntime.InferenceSession(file_path)
+    input_name = ort_session.get_inputs()[0].name
+    ort_inputs = {input_name: batch}
+    ort_outs = ort_session.run(None, ort_inputs)
 
-    # # Perform the search, 'recursive=True' allows '**' to match any directory depth
-    # onnx_path = glob.glob(pattern, recursive=True)
-    # print(img_array.dtype)
+    print('OUTPUT', ort_outs[0][0])
 
-    # # Check if we found any models
-    # if onnx_path:
-    #     # If there are multiple models, decide how to select the one you want,
-    #     # for example, taking the first one found:
-    #     onnx_path = onnx_path[0]
-
-    # # TODO: It seems that the model was not exported correctly to accept a random batch size (it only works with a batch size of 25)
-    # batch = np.array(25*[img_array.astype(np.float32)])
-    # print(batch.shape)
-
-    # # Execute model
-    # ort_session = onnxruntime.InferenceSession(onnx_path)
-    # input_name = ort_session.get_inputs()[0].name
-    # ort_inputs = {input_name: batch}
-    # ort_outs = ort_session.run(None, ort_inputs)
-
-    # print('OUTPUT', ort_outs[0][0])
-
-    # return {"message": f"{model_name} model executed in local", "array_shape": img_array.shape, "model_path": model_path, "model_output": ort_outs[0].shape}
+    return {"message": f"{model} model executed in local", "array_shape": img_array.shape, "model_output": ort_outs[0].shape}

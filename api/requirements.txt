@@ -2,3 +2,6 @@ eotdl
 rasterio
 onnxruntime
 numpy
+fastapi
+uvicorn
+python-multipart
