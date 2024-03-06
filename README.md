@@ -1,7 +1,7 @@
 # ml-inference
 ML Inference Processor
 
-A docker image has been created and tested using:
+A docker image has been created and runned using the Dockerfile:
 
 ```bash
  docker build -t ml-inference .
@@ -9,6 +9,12 @@ A docker image has been created and tested using:
 
 ```bash
  docker run --name ml-inference -p 8000:8000 ml-inference
+```
+
+Or altrenatively, using the docker compose configuration file:
+
+```bash
+docker-compose up
 ```
 
 The image has been pushed to dockerhub with this commands:
