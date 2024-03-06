@@ -35,4 +35,4 @@ async def inference(model: str, img_file: UploadFile = File(...)):
     ort_inputs = {input_name: batch}
     ort_outs = ort_session.run(None, ort_inputs)
 
-    return {"message": f"{model} model executed with outputs: {ort_outs[0][0]}"}
+    return {"message": f"{model} model executed", "outputs": f"{ort_outs[0][0]}"}
