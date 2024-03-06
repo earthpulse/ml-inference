@@ -5,13 +5,11 @@ from rasterio.io import MemoryFile
 from eotdl.models import download_model
 import os
 import onnxruntime
-import glob
 
 app = FastAPI()
 
 @app.post("/{model}")
 async def inference(model: str, img_file: UploadFile = File(...)):
-    print("hola")
     # Read the data from the file in memory
     contents = await img_file.read()
 
@@ -20,7 +18,6 @@ async def inference(model: str, img_file: UploadFile = File(...)):
         with memfile.open() as dataset:
             # Convert the file content to a numpy array
             img_array = dataset.read()
-            print(img_array.shape)
 
     try:
         download_path = download_model(model, force=True)
@@ -29,9 +26,7 @@ async def inference(model: str, img_file: UploadFile = File(...)):
 
     # TODO: It seems that the model was not exported correctly to accept a random batch size (it only works with a batch size of 25)
     batch = np.array(25*[img_array.astype(np.float32)])
-    print(batch.shape)
 
-    print(download_path)
     file_path = os.path.join(download_path, 'model.onnx')
     
     # Execute model
@@ -40,6 +35,4 @@ async def inference(model: str, img_file: UploadFile = File(...)):
     ort_inputs = {input_name: batch}
     ort_outs = ort_session.run(None, ort_inputs)
 
-    print('OUTPUT', ort_outs[0][0])
-
-    return {"message": f"{model} model executed in local", "array_shape": img_array.shape, "model_output": ort_outs[0].shape}
+    return {"message": f"{model} model executed with outputs: {ort_outs[0][0]}"}
