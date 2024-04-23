@@ -1,0 +1,36 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ml-inference
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: ml-inference
+  template:
+    metadata:
+      labels:
+        app: ml-inference
+    spec:
+      containers:
+        - name: ml-inference
+          image: earthpulseit/ml-inference:latest
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 8000
+          envFrom:
+          - configMapRef:
+              name: ml-inference-config
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: ml-inference-service
+spec:
+  selector:
+    app: ml-inference
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 8000
+  type: NodePort # change to LoadBalancer for cloud deployments

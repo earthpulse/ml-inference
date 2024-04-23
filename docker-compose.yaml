@@ -7,7 +7,7 @@ services:
       dockerfile: Dockerfile  
     image: ml-inference
     container_name: ml-inference
-    platform: linux/arm64
+    # platform: linux/arm64
     ports:
       - 8000:8000
     volumes:
