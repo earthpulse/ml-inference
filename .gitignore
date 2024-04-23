@@ -5,3 +5,4 @@ eotdl
 tmp
 .dockerignore
 .DS_Store
+deployment-dev.yaml
