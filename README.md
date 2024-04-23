@@ -1,46 +1,73 @@
 # ML Inference Processor
 
-A docker image has been created and runned using the Dockerfile:
+## Developing
 
-```bash
- docker build -t ml-inference .
+To develop the api, run 
+
 ```
-
-```bash
- docker run --name ml-inference -p 8000:8000 --name ml-inf -d ml-inference
-```
-
-Or altrenatively, using the docker compose configuration file:
-
-```bash
 docker-compose up
 ```
 
-The image has been pushed to dockerhub with this commands:
+You can try the api with the interactive documentation at `http://localhost:8000/docs`.
+
+## Running in production
+
+### Create a docker image
+
+Build the docker image:
 
 ```bash
-docker tag ml-inference judithep/ml-inference:v0
+ docker build -t <username>/<image-name>:<tag> .
 ```
+
+> Use your dockerhub username and a tag for the image.
+
+Push to docker hub:
+
+```
+docker push <username>/<image-name>:<tag>
+```
+
+> You will need to login to dockerhub with your credentials before pushing the image.
+
+You can run the image with:
 
 ```bash
-docker push judithep/ml-inference:v0
+ docker run -p 8000:80 <username>/<image-name>:<tag>
 ```
 
-Once published in DockerHub, it has been deployed in a local kubernettes cluster using `Minikube`and `kubectl`:
+### Run with kubernetes
 
-1. Install minikube and kubectl
-2. Using a docker image of minikube, start the cluster in local:
+#### MiniKube
+
+Start minikube:
 
 ```bash
 minikube start
 ```
-3. Deploy to the cluster the image published in DockerHub:
 
-```bash
-kubectl create deployment ml-inference --image=judithrp/ml-inference:v0
+Create secrets
+
 ```
-4. Run a proxy to access the app:
+kubectl create configmap ml-inference-config --from-env-file=.env
+```
+
+Deploy api to cluster:
 
 ```bash
-kubectl proxy
+kubectl apply -f k8s/deployment.yaml
+```
+
+> Change the image name in the deployment file to the one you created.
+
+Port forward to access the api:
+
+```bash
+kubectl port-forward service/ml-inference-service 8000:80 
+```
+
+Get api logs
+
+```bash
+kubectl logs -f deployment/ml-inference
 ```

@@ -1,7 +1,7 @@
-# eotdl
 onnxruntime
 numpy
 fastapi
 uvicorn
 python-multipart
-rasterio
+eotdl
+einops
