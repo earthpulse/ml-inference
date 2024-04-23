@@ -1,22 +1,20 @@
-# FROM continuumio/miniconda3:22.11.1
 FROM python:3.8-slim
 
 WORKDIR /app
 
 ADD . /app
+WORKDIR /app
+
+# need to install gdal to make rasterio work in macos
+
+RUN apt-get update -y && apt-get install -y g++ gdal-bin libgdal-dev
+
+ENV CPLUS_INCLUDE_PATH=/usr/include/gdal
+ENV C_INCLUDE_PATH=/usr/include/gdal
+
+RUN pip install --global-option=build_ext --global-option="-I/usr/include/gdal" GDAL==`gdal-config --version`
 
 RUN pip install -r requirements.txt
-
-# RUN pip install --no-cache-dir -r requirements.txt
-# RUN pip install -U rasterio
-
-# RUN conda config --add channels conda-forge && conda update -y conda \
-#     && conda install -y geopandas
-# RUN conda install --solver=classic conda-forge::conda-libmamba-solver conda-forge::libmamba conda-forge::libmambapy conda-forge::libarchive
-# RUN conda install -y -c conda-forge --file requirements.txt
-# RUN pip install eotdl
-
-# RUN pip install eotdl
 
 EXPOSE 8000
 
