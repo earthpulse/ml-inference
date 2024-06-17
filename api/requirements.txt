@@ -1,7 +1,11 @@
-onnxruntime
-numpy
 fastapi
 uvicorn
 python-multipart
-eotdl
+requests
 einops
+onnxruntime
+rasterio
+pandas
+geopandas
+pystac
+geomet
