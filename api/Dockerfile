@@ -14,6 +14,7 @@ ADD . /app
 # RUN pip install --global-option=build_ext --global-option="-I/usr/include/gdal" GDAL==`gdal-config --version`
 
 RUN pip install -r requirements.txt
+RUN pip install -r requirements.cpu.txt
 
 EXPOSE 8000
 
