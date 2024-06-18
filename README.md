@@ -8,12 +8,12 @@ This repository contains resources for creating production-grade ML inference pr
 
 Future features will include:
 
-- [] Auto-scaling
-- [] Monitoring & Alerting
-- [] Batch & Online processing
-- [] Data drift detection
-- [] Security & Safety
-- [] Load testing
+- [ ] Auto-scaling
+- [ ] Monitoring & Alerting
+- [ ] Batch & Online processing
+- [ ] Data drift detection
+- [ ] Security & Safety
+- [ ] Load testing
 
 ## Running the default processors
 
