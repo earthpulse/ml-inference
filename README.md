@@ -46,10 +46,10 @@ To develop the api, run
 
 ```
 # cpu support
-docker-compose -f docker-compose.yaml up
+docker-compose -f docker-compose.cpu.yaml up
 
 # gpu support
-docker-compose -f docker-compose.yaml -f docker-compose.gpu.yaml up
+docker-compose -f docker-compose.gpu.yaml up
 ```
 
 You can try the api with the interactive documentation at `http://localhost:8000/docs`.
