@@ -1,6 +1,6 @@
 # ML Inference Processor
 
-This repository contains resources for creating production-grade ML inference processors. Models are expected to be hosted on the [EOTDL](https://www.eotdl.com/) as [Q2+ models](https://github.com/earthpulse/eotdl/blob/main/tutorials/notebooks/05_q2_model.ipynb) ([ONNX](https://onnx.ai/) models + [STAC](https://stacspec.org/en) metadata with the [MLM](https://github.com/crim-ca/mlm-extension) extension). The following features are included:
+This repository contains resources for creating production-grade ML inference processors. Models are expected to be hosted on the [EOTDL](https://www.eotdl.com/) as [Q2+ models](https://github.com/earthpulse/eotdl/blob/main/tutorials/notebooks/06_q2_model.ipynb) ([ONNX](https://onnx.ai/) models + [STAC](https://stacspec.org/en) metadata with the [MLM](https://github.com/crim-ca/mlm-extension) extension). The following features are included:
 
 - [x] CPU/GPU inference
 - [x] Docker 
