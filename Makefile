@@ -1,14 +1,22 @@
-run:
-	docker-compose up
+run-cpu:
+	docker-compose -f docker-compose.cpu.yaml up
 
-stop:
-	docker-compose down
+run-gpu:
+	docker-compose -f docker-compose.gpu.yaml up
 
-build:
-	docker build -t ${u}/ml-inference:${v} api/.
+build-cpu:
+	sed -i 's/__version__ = '.*'/__version__ = "${v}"/' api/main.py
+	docker build -t earthpulseit/ml-inference api/.
 
-push:
-	docker push ${u}/ml-inference:${v}
+build-gpu:
+	sed -i 's/__version__ = '.*'/__version__ = "${v}"/' api/main.py
+	docker build -t earthpulseit/ml-inference-gpu -f api/Dockerfile.gpu api/.
+
+push-cpu:
+	docker push earthpulseit/ml-inference
+
+push-gpu:
+	docker push earthpulseit/ml-inference-gpu
 
 minikube:
 	minikube start

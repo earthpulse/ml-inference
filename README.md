@@ -20,16 +20,14 @@ Future features will include:
 To run the default API with `Docker`, you can use the following command:
 
 ```bash
-docker run -p 8000:80 -e EOTDL_API_KEY=<eotdl_api_key> earthpulse/ml-inference
+# cpu
+docker run -p 8000:80 -e EOTDL_API_KEY=<eotdl_api_key> earthpulseit/ml-inference
+
+# gpu
+docker run --gpus all -p 8000:80 -e EOTDL_API_KEY=<eotdl_api_key> earthpulseit/ml-inference-gpu
 ```
 
 > You can get your EOTDL API key for free by signing up at [EOTDL](https://www.eotdl.com/) and creating a new token in your profile.
-
-Other images include GPU support and other features
-
-```bash
-docker run -p 8000:80 -e EOTDL_API_KEY=<eotdl_api_key> earthpulse/ml-inference-gpu
-```
 
 You can also use the sample `k8s` manifests to deploy the API to a Kubernetes cluster.
 
@@ -47,7 +45,11 @@ This repository offers functionality for creating production-grade APIs to perfo
 To develop the api, run 
 
 ```
-docker-compose up
+# cpu support
+docker-compose -f docker-compose.yaml up
+
+# gpu support
+docker-compose -f docker-compose.yaml -f docker-compose.gpu.yaml up
 ```
 
 You can try the api with the interactive documentation at `http://localhost:8000/docs`.
@@ -59,7 +61,11 @@ You can try the api with the interactive documentation at `http://localhost:8000
 Build the docker image:
 
 ```bash
+# cpu
  docker build -t <username>/<image-name>:<tag> api
+
+# gpu
+ docker build -t <username>/<image-name>:<tag> -f api/Dockerfile.gpu api
 ```
 
 > Use your dockerhub username and a tag for the image.
@@ -75,7 +81,11 @@ docker push <username>/<image-name>:<tag>
 You can run the image with:
 
 ```bash
- docker run -p 8000:80 <username>/<image-name>:<tag>
+# cpu
+docker run -p 8000:8000 <username>/<image-name>:<tag>
+
+# gpu
+docker run --gpus all -p 8000:8000 <username>/<image-name>:<tag>
 ```
 
 ### Run with kubernetes

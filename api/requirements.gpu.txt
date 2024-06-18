@@ -1,0 +1,2 @@
+numpy==1.26.4 # numpy 2.0 not compatible with onnxruntime-gpu yet
+onnxruntime-gpu==1.18 # onnxruntime 1.18 uses CUDA 11.8.0 by default
