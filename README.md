@@ -95,11 +95,7 @@ docker run --gpus all -p 8000:8000 <username>/<image-name>:<tag>
 Start minikube:
 
 ```bash
-# cpu
 minikube start
-
-# gpu
-minikube start --kvm-gpu
 ```
 
 > add metrics server if you want to use autoscaling `minikube addons enable metrics-server`
