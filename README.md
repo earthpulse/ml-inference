@@ -5,10 +5,10 @@ This repository contains resources for creating production-grade ML inference pr
 - [x] CPU/GPU inference
 - [x] Docker 
 - [x] Kubernetes
+- [x] Auto-scaling
 
 Future features will include:
 
-- [ ] Auto-scaling
 - [ ] Monitoring & Alerting
 - [ ] Batch & Online processing
 - [ ] Data drift detection
