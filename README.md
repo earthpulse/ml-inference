@@ -95,7 +95,11 @@ docker run --gpus all -p 8000:8000 <username>/<image-name>:<tag>
 Start minikube:
 
 ```bash
+# cpu
 minikube start
+
+# gpu
+minikube start --kvm-gpu
 ```
 
 > add metrics server if you want to use autoscaling `minikube addons enable metrics-server`
@@ -138,4 +142,9 @@ Modify the manifest to adjust to your needs.
 
 You can test the autoscaling with a load test with `locust`.
 
-<!-- https://minikube.sigs.k8s.io/docs/tutorials/nvidia/ -->
+#### GPU
+
+Minikube gpu support is limited. Following https://minikube.sigs.k8s.io/docs/tutorials/nvidia/ does not seem to work.
+
+- Deployment: install nvidia device plugin in k8s nodes and add `resources: limits: nvidia.com/gpu: 1` to the deployment manifest. No more GPUs than available on nodes can be used.
+- Autoscaling: expose gpu usage as custom metric (prometheus + node exporter + prometheus adapter) and use it in the hpa manifest.

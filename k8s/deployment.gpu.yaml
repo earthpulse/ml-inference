@@ -1,0 +1,40 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ml-inference-gpu
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: ml-inference-gpu
+  template:
+    metadata:
+      labels:
+        app: ml-inference-gpu
+    spec:
+      containers:
+        - name: ml-inference-gpu
+          image: earthpulseit/ml-inference-gpu:latest
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 8000
+          envFrom:
+          - configMapRef:
+              name: ml-inference-config
+          resources:
+            requests:
+              cpu: 200m
+              memory: 100Mi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: ml-inference-service
+spec:
+  selector:
+    app: ml-inference-gpu
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 8000
+  type: NodePort # change to LoadBalancer for cloud deployments

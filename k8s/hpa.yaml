@@ -10,3 +10,17 @@ spec:
   minReplicas: 1
   maxReplicas: 10
   targetCPUUtilizationPercentage: 50
+  # metrics:
+  # - type: Resource
+  #   resource:
+  #     name: cpu
+  #     target:
+  #       type: Utilization
+  #       averageUtilization: 50
+  # - type: Pods
+  #   pods:
+  #     metric:
+  #       name: gpu_usage
+  #     target:
+  #       type: AverageValue
+  #       averageValue: 500m
