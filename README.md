@@ -6,6 +6,7 @@ This repository contains resources for creating production-grade ML inference pr
 - [x] Docker 
 - [x] Kubernetes
 - [x] Auto-scaling
+- [x] Load testing
 
 Future features will include:
 
@@ -13,7 +14,6 @@ Future features will include:
 - [ ] Batch & Online processing
 - [ ] Data drift detection
 - [ ] Security & Safety
-- [ ] Load testing
 
 ## Running the default processors
 
