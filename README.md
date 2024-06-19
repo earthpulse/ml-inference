@@ -98,6 +98,8 @@ Start minikube:
 minikube start
 ```
 
+> add metrics server if you want to use autoscaling `minikube addons enable metrics-server`
+
 Create secrets
 
 ```
@@ -123,3 +125,17 @@ Get api logs
 ```bash
 kubectl logs -f deployment/ml-inference
 ```
+
+#### Autoscaling
+
+You can autoscale your API with the following command:
+
+```bash
+kubectl apply -f k8s/hpa.yaml
+```
+
+Modify the manifest to adjust to your needs.
+
+You can test the autoscaling with a load test with `locust`.
+
+<!-- https://minikube.sigs.k8s.io/docs/tutorials/nvidia/ -->

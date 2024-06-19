@@ -21,6 +21,10 @@ spec:
           envFrom:
           - configMapRef:
               name: ml-inference-config
+          resources:
+            requests:
+              cpu: 200m
+              memory: 100Mi
 ---
 apiVersion: v1
 kind: Service
