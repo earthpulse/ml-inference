@@ -1,13 +1,14 @@
 from fastapi import FastAPI, File, UploadFile, status, Form
 from fastapi.exceptions import HTTPException
 from fastapi.middleware.cors import CORSMiddleware
+from starlette.responses import StreamingResponse
 import rasterio as rio
-import onnxruntime
 import io
 import os
 import numpy as np
+from PIL import Image
 
-from src.utils import download_model
+from src.utils import download_model, format_outputs, sigmoid
 from src.onnx import get_onnx_session
 
 __version__ = "2024.06.18"
@@ -36,8 +37,6 @@ async def hello():
 
 
 DOWNLOAD_PATH = os.getenv("EOTDL_DOWNLOAD_PATH", "/tmp")
-
-# TODO: normalization, processing, ...
 
 
 @app.post("/{model}")
@@ -89,6 +88,12 @@ async def inference(
         for i, dim in enumerate(input_shape):
             if dim != -1:
                 assert dim == image.shape[i], "Input dimension not valid"
+
+        # normalization
+        image = (
+            image / 255.0
+        )  # this should be defined in the model metadata (this is only for RGB will not work with satellite images)
+
         # TODO: resize if necessary
 
         # execute model
@@ -99,13 +104,45 @@ async def inference(
         output_nodes = ort_session.get_outputs()
         output_names = [node.name for node in output_nodes]
 
+        outputs = format_outputs(ort_outs, output_names, image, model_props)
+
         # return outputs
-        return {
-            "model": model,
-            **{output: ort_outs[i].tolist() for i, output in enumerate(output_names)},
-        }
+        if model_props["mlm:output"]["tasks"] == ["classification"]:
+            return {
+                "model": model,
+                **outputs,
+            }
+        elif model_props["mlm:output"]["tasks"] == [
+            "segmentation"
+        ]:  # only returns first output as image
+            # return mask
+            batch = outputs[output_names[0]]
+            image = batch[0]
+            image = sigmoid(image) > 0.5  # this should be defined in the model metadata
+            if image.ndim == 3:  # get first band
+                image = image[0]
+            img = Image.fromarray(image, mode="L")  # only returns binary mask
+            buf = io.BytesIO()
+            img.save(buf, "tiff")
+            buf.seek(0)
+            return StreamingResponse(buf, media_type="image/tiff")
+        else:
+            raise Exception(
+                "Output task not supported", model_props["mlm:output"]["tasks"]
+            )
 
     except Exception as e:
-        print("ERROR")
+        print("ERROR", "inference")
+        print(e)
+        raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail=str(e))
+
+
+@app.get("/{model}")
+def retrieve_model_metadata(model: str, version: int = None):
+    try:
+        _, stac_df = download_model(model, DOWNLOAD_PATH, version, download=False)
+        return stac_df.to_json()
+    except Exception as e:
+        print("ERROR", "retrieve_model_metadata")
         print(e)
         raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail=str(e))
