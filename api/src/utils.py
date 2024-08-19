@@ -1,6 +1,7 @@
 import os
 import requests
 import geopandas as gpd
+import numpy as np
 
 from .dataframe import STACDataFrame
 
@@ -8,7 +9,7 @@ EOTDL_API_URL = "https://api.eotdl.com/"
 EOTDL_API_KEY = os.getenv("EOTDL_API_KEY")
 
 
-def download_model(model_name, dst_path, version, force=False):
+def download_model(model_name, dst_path, version, force=False, download=True):
     # check if model already downloaded
     version = 1 if version is None else version
     download_path = dst_path + "/" + model_name + "/v" + str(version)
@@ -30,6 +31,8 @@ def download_model(model_name, dst_path, version, force=False):
     if error:
         raise Exception(error)
     df = STACDataFrame(gdf)
+    if not download:
+        return download_path, df
     os.makedirs(download_path, exist_ok=True)
     df.to_stac(download_path)
     df = df.dropna(subset=["assets"])
@@ -76,3 +79,46 @@ def download_file_url(url, filename, path):
                 if chunk:
                     f.write(chunk)
         return path
+
+
+def format_outputs(ort_outputs, output_names, input, model_props):
+    if model_props["mlm:output"]["tasks"] == ["classification"]:
+        return {
+            output: ort_outputs[i].tolist() for i, output in enumerate(output_names)
+        }
+    elif model_props["mlm:output"]["tasks"] == ["segmentation"]:
+        return {output: ort_outputs[i] for i, output in enumerate(output_names)}
+        # return {
+        #     output: reshape(
+        #         ort_outputs[i],
+        #         input,
+        #         model_props["mlm:output"]["result"]["shape"],
+        #         model_props["mlm:input"]["input"]["shape"],
+        #     )
+        #     for i, output in enumerate(output_names)
+        # }
+    else:
+        raise Exception("Output task not supported", model_props["mlm:output"]["tasks"])
+
+
+def reshape(x, input, output_shape, input_shape):
+    _output_shape = output_shape
+    _output_shape[0] = input.shape[0]  # batch size (maybe not always)
+    for i in range(1, len(output_shape)):
+        dim = output_shape[i]
+        if dim == -1:
+            j = (
+                i + 1 if len(input_shape) > len(output_shape) else i
+            )  # skip channel dimension if input has one more dimension (assuming channles first which may not be always the case)
+            if input_shape[j] == -1:
+                _output_shape[i] = input.shape[j]  # take first input shape as reference
+            else:
+                _output_shape[i] = input_shape[j]
+        else:
+            _output_shape[i] = dim
+    # it may require a resize as well...
+    return x.reshape(_output_shape)
+
+
+def sigmoid(x):
+    return 1 / (1 + np.exp(-x))

@@ -1,0 +1,226 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "id": "0",
+      "type": "Feature",
+      "properties": {
+        "id": 1,
+        "created_at": "2024-06-18T13:14:54.260747+00:00",
+        "modified_at": null,
+        "type": "Catalog",
+        "stac_id": "EuroSAT-RGB-Q2",
+        "stac_version": "1.0.0",
+        "description": "Catalog for the EuroSAT RGB Q2 ML Model",
+        "links": [
+          {
+            "rel": "self",
+            "href": "/home/juan/Desktop/eotdl/tutorials/notebooks/data/EuroSAT-RGB/STAC/catalog.json",
+            "type": "application/json"
+          },
+          {
+            "rel": "root",
+            "href": "./catalog.json",
+            "type": "application/json"
+          },
+          {
+            "rel": "child",
+            "href": "./model/collection.json",
+            "type": "application/json"
+          }
+        ],
+        "extent": null,
+        "license": null,
+        "properties": null,
+        "assets": null,
+        "bbox": null,
+        "stac_extensions": null,
+        "collection": null
+      },
+      "geometry": null
+    },
+    {
+      "id": "1",
+      "type": "Feature",
+      "properties": {
+        "id": 2,
+        "created_at": "2024-06-18T13:14:54.260747+00:00",
+        "modified_at": null,
+        "type": "Collection",
+        "stac_id": "model",
+        "stac_version": "1.0.0",
+        "description": "Collection for the EuroSAT RGB Q2 ML Model",
+        "links": [
+          {
+            "rel": "root",
+            "href": "../catalog.json",
+            "type": "application/json"
+          },
+          {
+            "rel": "item",
+            "href": "./model/model.json",
+            "type": "application/json"
+          },
+          {
+            "rel": "self",
+            "href": "/home/juan/Desktop/eotdl/tutorials/notebooks/data/EuroSAT-RGB/STAC/model/collection.json",
+            "type": "application/json"
+          },
+          {
+            "rel": "parent",
+            "href": "../catalog.json",
+            "type": "application/json"
+          }
+        ],
+        "extent": {
+          "spatial": {
+            "bbox": [
+              [
+                -180,
+                -90,
+                180,
+                90
+              ]
+            ]
+          },
+          "temporal": {
+            "interval": [
+              [
+                "2020-01-01T00:00:00Z",
+                null
+              ]
+            ]
+          }
+        },
+        "license": "proprietary",
+        "properties": null,
+        "assets": null,
+        "bbox": null,
+        "stac_extensions": null,
+        "collection": null
+      },
+      "geometry": null
+    },
+    {
+      "id": "2",
+      "type": "Feature",
+      "properties": {
+        "id": 3,
+        "created_at": "2024-06-18T13:14:54.260747+00:00",
+        "modified_at": null,
+        "type": "Feature",
+        "stac_id": "model",
+        "stac_version": "1.0.0",
+        "description": null,
+        "links": [
+          {
+            "rel": "root",
+            "href": "../../catalog.json",
+            "type": "application/json"
+          },
+          {
+            "rel": "collection",
+            "href": "../collection.json",
+            "type": "application/json"
+          },
+          {
+            "rel": "self",
+            "href": "/home/juan/Desktop/eotdl/tutorials/notebooks/data/EuroSAT-RGB/STAC/model/model/model.json",
+            "type": "application/json"
+          },
+          {
+            "rel": "parent",
+            "href": "../collection.json",
+            "type": "application/json"
+          }
+        ],
+        "extent": null,
+        "license": null,
+        "properties": {
+          "mlm:name": "model.onnx",
+          "mlm:framework": "ONNX",
+          "mlm:architecture": "resnet",
+          "mlm:tasks": [
+            "classification"
+          ],
+          "mlm:input": {
+            "name": "RGB statellite image",
+            "bands": [
+              "red",
+              "green",
+              "blue"
+            ],
+            "input": {
+              "shape": [
+                -1,
+                3,
+                -1,
+                -1
+              ],
+              "dim_order": [
+                "batch",
+                "channel",
+                "height",
+                "width"
+              ],
+              "data_type": "float32"
+            }
+          },
+          "mlm:output": {
+            "name": "logits",
+            "tasks": [
+              "classification"
+            ],
+            "classification:classes": [
+              "AnnualCrop",
+              "Forest",
+              "HerbaceousVegetation",
+              "Highway",
+              "Industrial",
+              "Pasture",
+              "PermanentCrop",
+              "Residential",
+              "River",
+              "SeaLake"
+            ],
+            "result": {
+              "shape": [
+                -1,
+                10
+              ],
+              "dim_order": [
+                "batch",
+                "height",
+                "width"
+              ],
+              "data_type": "float32"
+            }
+          },
+          "datetime": "2024-06-18T13:13:23.321680Z"
+        },
+        "assets": {
+          "model": {
+            "href": "https://api.eotdl.com/models/66718849ca9a032893ca7d43/download/model.onnx"
+          }
+        },
+        "bbox": [
+          125.6,
+          10.1,
+          125.6,
+          10.1
+        ],
+        "stac_extensions": [
+          "https://crim-ca.github.io/mlm-extension/v1.2.0/schema.json"
+        ],
+        "collection": "model"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          125.6,
+          10.1
+        ]
+      }
+    }
+  ]
+}
