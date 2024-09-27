@@ -5,17 +5,14 @@
       "id": "0",
       "type": "Feature",
       "properties": {
-        "id": 1,
-        "created_at": "2024-06-18T13:14:54.260747+00:00",
-        "modified_at": null,
         "type": "Catalog",
-        "stac_id": "EuroSAT-RGB-Q2",
+        "id": "RoadSegmentationQ2",
         "stac_version": "1.0.0",
-        "description": "Catalog for the EuroSAT RGB Q2 ML Model",
+        "description": "Catalog for the Road Segmentation Q2 ML Model",
         "links": [
           {
             "rel": "self",
-            "href": "/home/juan/Desktop/eotdl/tutorials/notebooks/data/EuroSAT-RGB/STAC/catalog.json",
+            "href": "/tmp/RoadSegmentationQ2/v1/RoadSegmentationQ2/catalog.json",
             "type": "application/json"
           },
           {
@@ -43,13 +40,10 @@
       "id": "1",
       "type": "Feature",
       "properties": {
-        "id": 2,
-        "created_at": "2024-06-18T13:14:54.260747+00:00",
-        "modified_at": null,
         "type": "Collection",
-        "stac_id": "model",
+        "id": "model",
         "stac_version": "1.0.0",
-        "description": "Collection for the EuroSAT RGB Q2 ML Model",
+        "description": "Collection for the Road Segmentation Q2 ML Model",
         "links": [
           {
             "rel": "root",
@@ -63,7 +57,7 @@
           },
           {
             "rel": "self",
-            "href": "/home/juan/Desktop/eotdl/tutorials/notebooks/data/EuroSAT-RGB/STAC/model/collection.json",
+            "href": "/tmp/RoadSegmentationQ2/v1/RoadSegmentationQ2/model/collection.json",
             "type": "application/json"
           },
           {
@@ -105,11 +99,8 @@
       "id": "2",
       "type": "Feature",
       "properties": {
-        "id": 3,
-        "created_at": "2024-06-18T13:14:54.260747+00:00",
-        "modified_at": null,
         "type": "Feature",
-        "stac_id": "model",
+        "id": "model",
         "stac_version": "1.0.0",
         "description": null,
         "links": [
@@ -125,7 +116,7 @@
           },
           {
             "rel": "self",
-            "href": "/home/juan/Desktop/eotdl/tutorials/notebooks/data/EuroSAT-RGB/STAC/model/model/model.json",
+            "href": "/tmp/RoadSegmentationQ2/v1/RoadSegmentationQ2/model/model/model.json",
             "type": "application/json"
           },
           {
@@ -139,12 +130,12 @@
         "properties": {
           "mlm:name": "model.onnx",
           "mlm:framework": "ONNX",
-          "mlm:architecture": "resnet",
+          "mlm:architecture": "U-Net",
           "mlm:tasks": [
-            "classification"
+            "segmentation"
           ],
           "mlm:input": {
-            "name": "RGB statellite image",
+            "name": "RGB statellite image (HR)",
             "bands": [
               "red",
               "green",
@@ -163,44 +154,37 @@
                 "height",
                 "width"
               ],
-              "data_type": "float32"
+              "data_type": "float32",
+              "description": "Model trained with 1024x1024 RGB HR images, but can work with other dimensions as long as they are divisible by 16"
             }
           },
           "mlm:output": {
-            "name": "logits",
+            "name": "road binary mask",
             "tasks": [
-              "classification"
-            ],
-            "classification:classes": [
-              "AnnualCrop",
-              "Forest",
-              "HerbaceousVegetation",
-              "Highway",
-              "Industrial",
-              "Pasture",
-              "PermanentCrop",
-              "Residential",
-              "River",
-              "SeaLake"
+              "segmentation"
             ],
             "result": {
               "shape": [
                 -1,
-                10
+                1,
+                -1,
+                -1
               ],
               "dim_order": [
                 "batch",
+                "channel",
                 "height",
                 "width"
               ],
-              "data_type": "float32"
+              "data_type": "uint8",
+              "description": "Binary mask of the road segmentation. 1 for road, 0 for background"
             }
           },
-          "datetime": "2024-06-18T13:13:23.321680Z"
+          "datetime": "2024-08-19T11:02:10.214902Z"
         },
         "assets": {
           "model": {
-            "href": "https://api.eotdl.com/models/66718849ca9a032893ca7d43/download/model.onnx"
+            "href": "https://api.eotdl.com/models/66c32647250225d1d36e735e/download/model.onnx"
           }
         },
         "bbox": [
