@@ -87,7 +87,7 @@ async def inference(
                 raise Exception("Input shape not valid", input_shape, image.ndim)
         for i, dim in enumerate(input_shape):
             if dim != -1:
-                assert dim == image.shape[i], "Input dimension not valid"
+                assert dim == image.shape[i], f"Input dimension not valid: The model expects {input_shape} but the image has {image.shape} (-1 means any dimension)."
 
         # normalization
         image = (
