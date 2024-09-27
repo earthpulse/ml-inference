@@ -11,7 +11,7 @@ from PIL import Image
 from src.utils import download_model, format_outputs, sigmoid
 from src.onnx import get_onnx_session
 
-__version__ = "2024.08.19"
+__version__ = "2024.09.27"
 
 app = FastAPI(
     title="ml-inference",
