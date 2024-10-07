@@ -6,16 +6,20 @@ run-gpu:
 
 build-cpu:
 	sed -i 's/__version__ = '.*'/__version__ = "${v}"/' api/main.py
-	docker build -t earthpulseit/ml-inference api/.
+	docker build -t earthpulseit/ml-inference:${v} -t earthpulseit/ml-inference:latest  -t earthpulseit/ml-inference api/.
 
 build-gpu:
 	sed -i 's/__version__ = '.*'/__version__ = "${v}"/' api/main.py
-	docker build -t earthpulseit/ml-inference-gpu -f api/Dockerfile.gpu api/.
+	docker build -t earthpulseit/ml-inference-gpu:${v} -t earthpulseit/ml-inference-gpu:latest -t earthpulseit/ml-inference-gpu -f api/Dockerfile.gpu api/.
 
 push-cpu:
+	docker push earthpulseit/ml-inference:${v}
+	docker push earthpulseit/ml-inference:latest
 	docker push earthpulseit/ml-inference
 
 push-gpu:
+	docker push earthpulseit/ml-inference-gpu:${v}
+	docker push earthpulseit/ml-inference-gpu:latest
 	docker push earthpulseit/ml-inference-gpu
 
 minikube:
