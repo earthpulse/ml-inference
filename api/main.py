@@ -76,7 +76,7 @@ async def inference(
             buf = io.BytesIO()
             img.save(buf, "tiff")
             buf.seek(0)
-            return StreamingResponse(buf, media_type="image/tiff")
+            return StreamingResponse(buf, media_type="image/tiff") # TODO: should be COG
         else:
             raise Exception(
                 "Output task not supported", model.props["mlm:output"]["tasks"]
