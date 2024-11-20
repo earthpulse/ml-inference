@@ -9,3 +9,4 @@ geopandas
 pystac
 geomet
 pillow
+tqdm
