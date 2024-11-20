@@ -7,7 +7,6 @@ import io
 import os
 from PIL import Image
 
-from src.utils import sigmoid
 from src.eotdl_wrapper import ModelWrapper
 
 __version__ = "2024.10.07"
@@ -70,10 +69,10 @@ async def inference(
             return outputs
         elif model.props["mlm:output"]["tasks"] == ["segmentation"]:  # only returns first output as image
             # return mask
-            image = sigmoid(outputs) > 0.5  # this should be defined in the model metadata
-            if image.ndim == 3:  # get first band
-                image = image[0]
-            img = Image.fromarray(image, mode="L")  # only returns binary mask
+            # image = sigmoid(outputs) > 0.5  # this should be defined in the model metadata
+            if outputs.ndim == 3:  # get first band
+                outputs = outputs[0]
+            img = Image.fromarray(outputs, mode="F")  # only returns binary mask
             buf = io.BytesIO()
             img.save(buf, "tiff")
             buf.seek(0)
