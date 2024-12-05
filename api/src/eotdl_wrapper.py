@@ -9,6 +9,7 @@ from pathlib import Path
 from tqdm import tqdm
 import numpy as np
 import onnxruntime as ort
+from skimage.transform import resize
 
 from .utils import retrieve_model, retrieve_model_stac, download_file_url
 from .dataframe import STACDataFrame
@@ -136,6 +137,19 @@ class ModelWrapper:
             if dim != -1:
                 assert dim == x.shape[i], f"Input dimension not valid: The model expects {input_shape} but input has {x.shape} (-1 means any dimension)."
         # TODO: should apply normalization if defined in metadata
+
+        # check height and width are divisible by 32
+        original_size = x.shape[2:]
+        if original_size[0] % 32 != 0 or original_size[1] % 32 != 0:
+            # resize to nearest multiple of 32
+            new_size = (
+                32 * (original_size[0] // 32),
+                32 * (original_size[1] // 32),
+            )
+            x = resize(x, (1, 3, *new_size), preserve_range=True)
+            print(f"Resized image from {original_size} to {new_size}")
+        self.original_size = original_size
+
         return x
     
     def return_outputs(self, ort_outputs, output_names):

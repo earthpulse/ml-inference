@@ -6,10 +6,11 @@ import rasterio as rio
 import io
 import os
 from PIL import Image
+from skimage.transform import resize
 
 from src.eotdl_wrapper import ModelWrapper
 
-__version__ = "2024.10.07"
+__version__ = "2024.12.05"
 
 app = FastAPI(
     title="ml-inference",
@@ -72,6 +73,8 @@ async def inference(
             # image = sigmoid(outputs) > 0.5  # this should be defined in the model metadata
             if outputs.ndim == 3:  # get first band
                 outputs = outputs[0]
+            outputs = resize(outputs, model.original_size, preserve_range=True)
+            # outputs = outputs.astype(np.uint8)
             img = Image.fromarray(outputs, mode="F")  # only returns binary mask
             buf = io.BytesIO()
             img.save(buf, "tiff")

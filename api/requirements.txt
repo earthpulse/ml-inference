@@ -10,3 +10,4 @@ pystac
 geomet
 pillow
 tqdm
+scikit-image
