@@ -3,8 +3,8 @@
 # Configuration
 URL="http://localhost:8000/RoadSegmentationQ2"
 IMAGE_PATH="samples/deep_globe.jpg"
-NUM_REQUESTS=5
-SLEEP_SECONDS=5
+NUM_REQUESTS=10
+SLEEP_SECONDS=3
 
 # Function to make a single request
 make_request() {

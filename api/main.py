@@ -40,8 +40,8 @@ async def hello():
 
 
 DOWNLOAD_PATH = os.getenv("EOTDL_DOWNLOAD_PATH", "/tmp")
-BATCH_SIZE = 3
-TIMEOUT = 0.1
+BATCH_SIZE = os.getenv("BATCH_SIZE", 3)
+BATCH_TIMEOUT = os.getenv("BATCH_TIMEOUT", 1)
 
 batch_processors: Dict[str, BatchProcessor] = {}
 
@@ -58,7 +58,7 @@ async def inference(
             batch_processors[model] = BatchProcessor(
                 model=model_wrapper,
                 batch_size=BATCH_SIZE,
-                timeout=TIMEOUT
+                timeout=BATCH_TIMEOUT
             )
         # load image in memory as numpy array
         with rio.open(io.BytesIO(image.file.read())) as src:
