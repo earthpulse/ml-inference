@@ -1,0 +1,21 @@
+from typing import List, Dict, Any, Callable
+import asyncio
+import time
+import numpy as np
+
+class BatchProcessor:
+	def __init__(
+		self,
+		model,
+		batch_size: int = 16,
+		timeout: float = 0.2,  # 200ms
+	):
+		self.model = model
+		self.batch_size = batch_size
+
+		
+	async def add_item(self, item: np.ndarray, callback: Callable):
+		
+
+	async def process_batch(self):
+		

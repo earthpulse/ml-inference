@@ -49,6 +49,7 @@ class ModelWrapper:
         # preprocess input
         x = self.process_inputs(x)
         # execute model
+        print("executing model with input shape", x.shape)
         input_name = ort_session.get_inputs()[0].name
         ort_inputs = {input_name: x}
         ort_outs = ort_session.run(None, ort_inputs)
@@ -163,8 +164,7 @@ class ModelWrapper:
         elif self.props["mlm:output"]["tasks"] == ["segmentation"]:
             outputs = {output: ort_outputs[i] for i, output in enumerate(output_names)}
             batch = outputs[output_names[0]]
-            image = batch[0]
-            return image
+            return batch
         else:
             raise Exception("Output task not supported:", self.props["mlm:output"]["tasks"])
 
