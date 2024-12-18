@@ -7,11 +7,11 @@ This repository contains resources for creating production-grade ML inference pr
 - [x] Kubernetes
 - [x] Auto-scaling
 - [x] Load testing
+- [x] Batch & Online processing
 
 Future features will include:
 
 - [ ] Monitoring & Alerting
-- [ ] Batch & Online processing
 - [ ] Data drift detection
 - [ ] Security & Safety
 
@@ -34,6 +34,22 @@ You can also use the sample `k8s` manifests to deploy the API to a Kubernetes cl
 ```bash
 kubectl apply -f k8s/deployment.yaml
 ```
+
+### Batch processing
+
+By default, requests to the API are processed sequentially. You can change this behavior by setting the `BATCH_SIZE` and `BATCH_TIMEOUT` environment variables. 
+
+- `BATCH_SIZE`: Maximum number of requests to process in a single batch.
+- `BATCH_TIMEOUT`: Maximum time to wait before processing an incomplete batch.
+```bash
+# cpu
+docker run -p 8000:80 -e EOTDL_API_KEY=<eotdl_api_key> -e BATCH_SIZE=<batch_size> -e BATCH_TIMEOUT=<batch_timeout> earthpulseit/ml-inference
+
+# gpu
+docker run --gpus all -p 8000:80 -e EOTDL_API_KEY=<eotdl_api_key> -e BATCH_SIZE=<batch_size> -e BATCH_TIMEOUT=<batch_timeout> earthpulseit/ml-inference-gpu
+```
+
+> This setting is particularly useful if the number of requests exceeds the time it takes to run inference with a model on your hardware.
 
 ## Building a new processor
 
