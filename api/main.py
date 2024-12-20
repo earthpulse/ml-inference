@@ -10,17 +10,21 @@ from skimage.transform import resize
 from functools import partial
 from typing import Dict
 import asyncio
+from prometheus_fastapi_instrumentator import Instrumentator
+import prometheus_client
 
 from src.eotdl_wrapper import ModelWrapper
 from src.batch import BatchProcessor
 
-__version__ = "2024.12.05"
+__version__ = "2024.12.18"
 
 app = FastAPI(
     title="ml-inference",
     version=__version__,
     description="API to perform inference on models hosted on EOTDL.",
 )
+
+Instrumentator().instrument(app).expose(app)
 
 app.add_middleware(
     CORSMiddleware,
@@ -29,7 +33,6 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
-
 
 @app.get("/")
 async def hello():
@@ -40,16 +43,25 @@ async def hello():
 
 
 DOWNLOAD_PATH = os.getenv("EOTDL_DOWNLOAD_PATH", "/tmp")
-BATCH_SIZE = os.getenv("BATCH_SIZE", 3)
-BATCH_TIMEOUT = os.getenv("BATCH_TIMEOUT", 1)
+BATCH_SIZE = int(os.getenv("BATCH_SIZE", 1))
+BATCH_TIMEOUT = float(os.getenv("BATCH_TIMEOUT", 1))
 
 batch_processors: Dict[str, BatchProcessor] = {}
 
+model_counter = prometheus_client.Counter(
+    "model_counter",
+    "Number of models processed",
+    labelnames=["model"]
+)
+
 @app.post("/{model}")
 async def inference(
-    model: str, image: UploadFile = File(...), version: int = Form(None)
+    model: str, 
+    image: UploadFile = File(...), 
+    version: int = Form(None)
 ):
     try:
+        model_counter.labels(model=model).inc()
         # download model from ETODL
         # download_path, stac_df = download_model(model, DOWNLOAD_PATH, version)
         model_wrapper = ModelWrapper(model, path=DOWNLOAD_PATH, version=version)

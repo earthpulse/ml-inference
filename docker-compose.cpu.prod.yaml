@@ -7,10 +7,13 @@ services:
     # platform: linux/arm64
     ports:
       - 8000:8000
-    volumes:
-      - ./tmp:/tmp
-    environment:
-      - EOTDL_DOWNLOAD_PATH=/tmp
+    # volumes:
+    #   - ./tmp:/tmp
+    # environment:
+    #   - EOTDL_DOWNLOAD_PATH=/tmp
     env_file: 
       - .env
     command: uvicorn main:app --host 0.0.0.0 --port 8000
+    labels:
+      - "prometheus.enable=true"
+      - "prometheus.job=ml-inference"
