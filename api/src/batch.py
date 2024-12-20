@@ -1,6 +1,8 @@
 import asyncio
 import numpy as np
 
+from .metrics import model_inference_duration, model_inference_batch_size, model_inference_timeout
+
 class BatchProcessor:
 	def __init__(
 		self,
@@ -34,6 +36,7 @@ class BatchProcessor:
 		# check if we need to process the batch
 		first_batch = self.batches[0]
 		if len(first_batch) == self.batch_size:
+			model_inference_batch_size.labels(model=self.model.model_name).set(self.batch_size)
 			if self.batch_timer:
 				self.batch_timer.cancel()
 				self.batch_timer = None
@@ -43,6 +46,7 @@ class BatchProcessor:
 		await asyncio.sleep(self.timeout)
 		if self.batches:  # Only process if there are batches waiting
 			# print(f"Timeout reached, processing incomplete batch of size {len(self.batches[0])}", flush=True)
+			model_inference_timeout.labels(model=self.model.model_name).inc()
 			await self.process_batch()
 		self.batch_timer = None
 		
@@ -50,7 +54,8 @@ class BatchProcessor:
 		current_batch = self.batches.pop(0)
 		# Prepare batch data
 		batch_data = np.concatenate([item["data"] for item in current_batch], axis=0)
-		batch_results = self.model.predict(batch_data)
+		with model_inference_duration.labels(model=self.model.model_name).time():
+			batch_results = self.model.predict(batch_data)
 		# Distribute results
 		for idx, item in enumerate(current_batch):
 			await item["callback"](batch_results[idx])

@@ -76,6 +76,20 @@ You can further customize the monitoring by:
 - Setting up alerts in Grafana
 - Adding more Prometheus exporters for system metrics
 
+Some custom metrics included are:
+- `model_counter`: Number of models requested
+- `model_error_counter`: Number of errors in model inference
+- `model_inference_duration`: Time spent processing inference requests
+- `model_inference_batch_size`: Number of images in the batch
+- `model_inference_timeout`: Number of inference requests that timed out
+
+You can set alerts in Grafana for these metrics by going to `Alerting > Alert Rules` in the Grafana dashboard. Some examples are:
+- `rate(model_inference_errors_total[1m]) > 10`: Alert if more than 10 errors in the last minute
+- `histogram_quantile(0.95, rate(model_inference_duration_seconds[1m])) > 10`: Alert if more than 95% of the requests take more than 10 seconds to process
+- You can add more alerts using `PromQL` queries.
+
+Alternatively, you can use `AlertManager` to send notifications via email, Slack, etc. (out of the scope of this repository).
+
 ## Building a new processor
 
 This repository offers functionality for creating production-grade APIs to perform inference on ML models. 

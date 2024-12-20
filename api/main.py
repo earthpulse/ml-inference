@@ -11,10 +11,10 @@ from functools import partial
 from typing import Dict
 import asyncio
 from prometheus_fastapi_instrumentator import Instrumentator
-import prometheus_client
 
 from src.eotdl_wrapper import ModelWrapper
 from src.batch import BatchProcessor
+from src.metrics import model_counter, model_error_counter
 
 __version__ = "2024.12.20"
 
@@ -47,12 +47,6 @@ BATCH_SIZE = int(os.getenv("BATCH_SIZE", 1))
 BATCH_TIMEOUT = float(os.getenv("BATCH_TIMEOUT", 1))
 
 batch_processors: Dict[str, BatchProcessor] = {}
-
-model_counter = prometheus_client.Counter(
-    "model_counter",
-    "Number of models processed",
-    labelnames=["model"]
-)
 
 @app.post("/{model}")
 async def inference(
@@ -111,6 +105,7 @@ async def inference(
     except Exception as e:
         print("ERROR", "inference")
         print(e)
+        model_error_counter.labels(model=model, error_type="inference").inc()
         raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail=str(e))
 
 async def process_in_batch(image, processor: BatchProcessor):

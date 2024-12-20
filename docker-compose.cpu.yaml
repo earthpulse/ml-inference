@@ -15,7 +15,7 @@ services:
       - ./tmp:/tmp
     environment:
       - EOTDL_DOWNLOAD_PATH=/tmp
-      - BATCH_SIZE=4
+      - BATCH_SIZE=5
       - BATCH_TIMEOUT=1
     env_file: 
       - .env
