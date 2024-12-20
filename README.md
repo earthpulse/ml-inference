@@ -9,11 +9,12 @@ This repository contains resources for creating production-grade ML inference pr
 - [x] Load testing
 - [x] Batch & Online processing
 - [x] Monitoring & Alerting
+- [x] Data drift detection
 
 Future features will include:
 
-- [ ] Data drift detection
 - [ ] Security & Safety
+- [ ] Testing
 
 ## Running the default processors
 
@@ -92,9 +93,23 @@ You can set alerts in Grafana for these metrics by going to `Alerting > Alert Ru
 
 Alternatively, you can use `AlertManager` to send notifications via email, Slack, etc. (out of the scope of this repository).
 
+
+### Data Drift Detection
+
+Data drift detection is an important monitoring practice in ML systems that helps identify when the statistical properties of your production data differ significantly from the training data. This difference can lead to model performance degradation over time.
+
+- Feature drift: Changes in the input data distribution (e.g., image pixel values, color distributions)
+- Label drift: Changes in the target variable distribution
+- Concept drift: Changes in the relationship between features and target
+
+Common Causes are seasonal changes, changes in data collection methods, population shifts, hardware/sensor changes, and data quality issues.
+
+You can use the `DRIFT_DETECTION` environment variable to enable drift detection. This will add a `DriftDetector` for each model. By default, the drift detector will monitor the input size for a given number of requests and report mean values with Prometheus (which can be visualized in Grafana and used to set alerts). Feel free to modify the `src/drift.py` file to monitor other metrics or to implement a different drift detection algorithm.
+
 ## Building a new processor
 
 This repository offers functionality for creating production-grade APIs to perform inference on ML models. 
+
 
 
 ### Developing locally

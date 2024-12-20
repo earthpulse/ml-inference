@@ -1,5 +1,5 @@
 run-cpu:
-	docker-compose -f docker-compose.cpu.yaml up
+	docker-compose -f docker-compose.monitoring.yaml -f docker-compose.cpu.yaml up
 
 run-gpu:
 	docker-compose -f docker-compose.gpu.yaml up

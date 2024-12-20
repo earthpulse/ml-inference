@@ -9,6 +9,7 @@ class BatchProcessor:
 		model,
 		batch_size: int = 16,
 		timeout: float = 0.2,  # 200ms
+		drift_detector = None
 	):
 		self.model = model
 		self.batch_size = batch_size
