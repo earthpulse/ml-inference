@@ -16,7 +16,7 @@ import prometheus_client
 from src.eotdl_wrapper import ModelWrapper
 from src.batch import BatchProcessor
 
-__version__ = "2024.12.18"
+__version__ = "2024.12.20"
 
 app = FastAPI(
     title="ml-inference",

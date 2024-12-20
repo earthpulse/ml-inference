@@ -37,4 +37,4 @@ spec:
     - protocol: TCP
       port: 80
       targetPort: 8000
-  type: NodePort # change to LoadBalancer for cloud deployments
+  type: NodePort # change to LoadBalancer/ClusterIP for cloud deployments
