@@ -4,7 +4,7 @@ metadata:
   name: ml-inference-ingress
 spec:
   rules:
-  - host: ml-inference.example.com
+  - host: ml-inference.example.com # use your domain here
     http:
       paths:
       - pathType: Prefix

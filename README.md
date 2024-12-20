@@ -179,9 +179,35 @@ Modify the manifest to adjust to your needs.
 
 You can test the autoscaling with a load test with `locust`.
 
+#### Monitoring
+
+You can monitor the API with Prometheus and Grafana.
+
+```bash
+kubectl apply -f k8s/prometheus-config.yaml
+kubectl apply -f k8s/monitoring.yaml
+```
+
+Port forward to access Prometheus and Grafana:
+
+```bash
+kubectl port-forward service/prometheus-service 9090:9090
+kubectl port-forward service/grafana-service 3000:3000
+```
+
+Connect Prometheus to Grafana with `http://prometheus-service:9090` as the Prometheus instance.
+
 #### GPU
 
 Minikube gpu support is limited. Following https://minikube.sigs.k8s.io/docs/tutorials/nvidia/ does not seem to work.
 
 - Deployment: install nvidia device plugin in k8s nodes and add `resources: limits: nvidia.com/gpu: 1` to the deployment manifest. No more GPUs than available on nodes can be used.
 - Autoscaling: expose gpu usage as custom metric (prometheus + node exporter + prometheus adapter) and use it in the hpa manifest.
+
+#### Running in the cloud
+
+To run the api in a cloud kubernetes cluster, you should follow the same steps as for minikube taking the following into account:
+
+- Change the service type to `LoadBalancer` or `ClusterIP` in the deployment manifests service section.
+- Use a cloud provider that supports gpu nodes (if you want to use the gpu version).
+- Use `ingress.yaml` to expose the api to the internet instead of port forwarding.
