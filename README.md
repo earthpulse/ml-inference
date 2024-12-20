@@ -8,10 +8,10 @@ This repository contains resources for creating production-grade ML inference pr
 - [x] Auto-scaling
 - [x] Load testing
 - [x] Batch & Online processing
+- [x] Monitoring & Alerting
 
 Future features will include:
 
-- [ ] Monitoring & Alerting
 - [ ] Data drift detection
 - [ ] Security & Safety
 
@@ -40,7 +40,8 @@ kubectl apply -f k8s/deployment.yaml
 By default, requests to the API are processed sequentially. You can change this behavior by setting the `BATCH_SIZE` and `BATCH_TIMEOUT` environment variables. 
 
 - `BATCH_SIZE`: Maximum number of requests to process in a single batch.
-- `BATCH_TIMEOUT`: Maximum time to wait before processing an incomplete batch.
+- `BATCH_TIMEOUT`: Maximum time (in seconds) to wait before processing an incomplete batch.
+
 ```bash
 # cpu
 docker run -p 8000:80 -e EOTDL_API_KEY=<eotdl_api_key> -e BATCH_SIZE=<batch_size> -e BATCH_TIMEOUT=<batch_timeout> earthpulseit/ml-inference
@@ -49,7 +50,31 @@ docker run -p 8000:80 -e EOTDL_API_KEY=<eotdl_api_key> -e BATCH_SIZE=<batch_size
 docker run --gpus all -p 8000:80 -e EOTDL_API_KEY=<eotdl_api_key> -e BATCH_SIZE=<batch_size> -e BATCH_TIMEOUT=<batch_timeout> earthpulseit/ml-inference-gpu
 ```
 
-> This setting is particularly useful if the number of requests exceeds the time it takes to run inference with a model on your hardware.
+> This setting is particularly useful if the number of concurrent requests exceeds the time it takes to run inference with a model on your hardware.
+
+### Monitoring and alerting
+
+In order to monitor the API, you can use Prometheus and Grafana. For this case we recommend using the `docker-compose.minitoring.yaml` file or the corresponding `k8s` deployments.
+
+```bash
+docker compose -f docker-compose.monitoring.yaml -f docker-compose.cpu.yaml up
+```
+
+In Grafana:
+- Add Prometheus as a data source (URL: http://prometheus:9090)
+- Import dashboard for FastAPI monitoring (you can start with dashboard ID 18739 from Grafana's dashboard marketplace)
+
+This setup will give you:
+- Basic metrics like request count, latency, and status codes
+- System metrics like CPU and memory usage
+- Custom metrics that you can add later
+- Visualization and alerting capabilities through Grafana
+
+You can further customize the monitoring by:
+- Adding custom metrics in your FastAPI code
+- Creating custom Grafana dashboards
+- Setting up alerts in Grafana
+- Adding more Prometheus exporters for system metrics
 
 ## Building a new processor
 

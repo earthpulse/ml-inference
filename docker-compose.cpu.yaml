@@ -15,6 +15,8 @@ services:
       - ./tmp:/tmp
     environment:
       - EOTDL_DOWNLOAD_PATH=/tmp
+      - BATCH_SIZE=4
+      - BATCH_TIMEOUT=1
     env_file: 
       - .env
     command: uvicorn main:app --host 0.0.0.0 --reload --port 8000
