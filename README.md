@@ -88,6 +88,8 @@ You can set alerts in Grafana for these metrics by going to `Alerting > Alert Ru
 - `histogram_quantile(0.95, rate(model_inference_duration_seconds[1m])) > 10`: Alert if more than 95% of the requests take more than 10 seconds to process
 - You can add more alerts using `PromQL` queries.
 
+> TODO: It may be interesting to create a custom dashboard with the included metrics and share it through Grafana's dashboard marketplace.
+
 Alternatively, you can use `AlertManager` to send notifications via email, Slack, etc. (out of the scope of this repository).
 
 ## Building a new processor
