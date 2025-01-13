@@ -19,7 +19,7 @@ from src.batch import BatchProcessor
 from src.drift import DriftDetector
 from src.metrics import model_counter, model_error_counter
 
-__version__ = "2024.12.20"
+__version__ = "2025.01.13"
 
 limiter = Limiter(key_func=get_remote_address)
 app = FastAPI(
