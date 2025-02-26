@@ -7,7 +7,7 @@
       "properties": {
         "type": "Catalog",
         "id": "RoadSegmentationQ2",
-        "stac_version": "1.0.0",
+        "stac_version": "1.1.0",
         "description": "Catalog for the Road Segmentation Q2 ML Model",
         "links": [
           {
@@ -28,10 +28,10 @@
         ],
         "extent": null,
         "license": null,
+        "stac_extensions": null,
+        "bbox": null,
         "properties": null,
         "assets": null,
-        "bbox": null,
-        "stac_extensions": null,
         "collection": null
       },
       "geometry": null
@@ -42,7 +42,7 @@
       "properties": {
         "type": "Collection",
         "id": "model",
-        "stac_version": "1.0.0",
+        "stac_version": "1.1.0",
         "description": "Collection for the Road Segmentation Q2 ML Model",
         "links": [
           {
@@ -86,11 +86,11 @@
             ]
           }
         },
-        "license": "proprietary",
+        "license": "other",
+        "stac_extensions": null,
+        "bbox": null,
         "properties": null,
         "assets": null,
-        "bbox": null,
-        "stac_extensions": null,
         "collection": null
       },
       "geometry": null
@@ -101,7 +101,7 @@
       "properties": {
         "type": "Feature",
         "id": "model",
-        "stac_version": "1.0.0",
+        "stac_version": "1.1.0",
         "description": null,
         "links": [
           {
@@ -127,6 +127,15 @@
         ],
         "extent": null,
         "license": null,
+        "stac_extensions": [
+          "https://crim-ca.github.io/mlm-extension/v1.2.0/schema.json"
+        ],
+        "bbox": [
+          125.6,
+          10.1,
+          125.6,
+          10.1
+        ],
         "properties": {
           "mlm:name": "model.onnx",
           "mlm:framework": "ONNX",
@@ -187,15 +196,6 @@
             "href": "https://api.eotdl.com/models/66c32647250225d1d36e735e/download/model.onnx"
           }
         },
-        "bbox": [
-          125.6,
-          10.1,
-          125.6,
-          10.1
-        ],
-        "stac_extensions": [
-          "https://crim-ca.github.io/mlm-extension/v1.2.0/schema.json"
-        ],
         "collection": "model"
       },
       "geometry": {
