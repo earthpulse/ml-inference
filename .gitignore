@@ -6,3 +6,5 @@ tmp
 .dockerignore
 .DS_Store
 deployment-dev.yaml
+*.tif
+*.jp2

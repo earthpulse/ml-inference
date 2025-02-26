@@ -3,25 +3,25 @@ version: "3"
 services:
   ml-inference-gpu:
     build:
-      context: ./api  
+      context: ./api
       dockerfile: Dockerfile.gpu
     image: ml-inference-gpu
     container_name: ml-inference-gpu
     ports:
       - 8000:8000
     volumes:
-      - ./api:/app
+      - ./api:/app/api
       - ./tmp:/tmp
     environment:
       - EOTDL_DOWNLOAD_PATH=/tmp
-    env_file: 
+    env_file:
       - .env
     # command: nvidia-smi
-    command: uvicorn main:app --host 0.0.0.0 --reload --port 8000
+    command: uv run uvicorn api.main:app --host 0.0.0.0 --reload --port 8000
     deploy:
       resources:
         reservations:
           devices:
             - driver: nvidia
               count: 1
-              capabilities: [gpu]
+              capabilities: [ gpu ]
