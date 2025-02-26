@@ -5,14 +5,17 @@
       "id": "0",
       "type": "Feature",
       "properties": {
+        "id": 1,
+        "created_at": "2024-08-19T11:02:38.384414+00:00",
+        "modified_at": null,
         "type": "Catalog",
-        "id": "RoadSegmentationQ2",
-        "stac_version": "1.1.0",
+        "stac_id": "RoadSegmentationQ2",
+        "stac_version": "1.0.0",
         "description": "Catalog for the Road Segmentation Q2 ML Model",
         "links": [
           {
             "rel": "self",
-            "href": "/tmp/RoadSegmentationQ2/v1/RoadSegmentationQ2/catalog.json",
+            "href": "/home/juan/Desktop/eotdl/tutorials/notebooks/data/RoadSegmentation/STAC/catalog.json",
             "type": "application/json"
           },
           {
@@ -28,10 +31,10 @@
         ],
         "extent": null,
         "license": null,
-        "stac_extensions": null,
-        "bbox": null,
         "properties": null,
         "assets": null,
+        "bbox": null,
+        "stac_extensions": null,
         "collection": null
       },
       "geometry": null
@@ -40,9 +43,12 @@
       "id": "1",
       "type": "Feature",
       "properties": {
+        "id": 2,
+        "created_at": "2024-08-19T11:02:38.384414+00:00",
+        "modified_at": null,
         "type": "Collection",
-        "id": "model",
-        "stac_version": "1.1.0",
+        "stac_id": "model",
+        "stac_version": "1.0.0",
         "description": "Collection for the Road Segmentation Q2 ML Model",
         "links": [
           {
@@ -57,7 +63,7 @@
           },
           {
             "rel": "self",
-            "href": "/tmp/RoadSegmentationQ2/v1/RoadSegmentationQ2/model/collection.json",
+            "href": "/home/juan/Desktop/eotdl/tutorials/notebooks/data/RoadSegmentation/STAC/model/collection.json",
             "type": "application/json"
           },
           {
@@ -86,11 +92,11 @@
             ]
           }
         },
-        "license": "other",
-        "stac_extensions": null,
-        "bbox": null,
+        "license": "proprietary",
         "properties": null,
         "assets": null,
+        "bbox": null,
+        "stac_extensions": null,
         "collection": null
       },
       "geometry": null
@@ -99,9 +105,12 @@
       "id": "2",
       "type": "Feature",
       "properties": {
+        "id": 3,
+        "created_at": "2024-08-19T11:02:38.384414+00:00",
+        "modified_at": null,
         "type": "Feature",
-        "id": "model",
-        "stac_version": "1.1.0",
+        "stac_id": "model",
+        "stac_version": "1.0.0",
         "description": null,
         "links": [
           {
@@ -116,7 +125,7 @@
           },
           {
             "rel": "self",
-            "href": "/tmp/RoadSegmentationQ2/v1/RoadSegmentationQ2/model/model/model.json",
+            "href": "/home/juan/Desktop/eotdl/tutorials/notebooks/data/RoadSegmentation/STAC/model/model/model.json",
             "type": "application/json"
           },
           {
@@ -127,15 +136,6 @@
         ],
         "extent": null,
         "license": null,
-        "stac_extensions": [
-          "https://crim-ca.github.io/mlm-extension/v1.2.0/schema.json"
-        ],
-        "bbox": [
-          125.6,
-          10.1,
-          125.6,
-          10.1
-        ],
         "properties": {
           "mlm:name": "model.onnx",
           "mlm:framework": "ONNX",
@@ -196,6 +196,15 @@
             "href": "https://api.eotdl.com/models/66c32647250225d1d36e735e/download/model.onnx"
           }
         },
+        "bbox": [
+          125.6,
+          10.1,
+          125.6,
+          10.1
+        ],
+        "stac_extensions": [
+          "https://crim-ca.github.io/mlm-extension/v1.2.0/schema.json"
+        ],
         "collection": "model"
       },
       "geometry": {

@@ -22,7 +22,7 @@ from api.src.batch import BatchProcessor
 from api.src.drift import DriftDetector
 from api.src.metrics import model_counter, model_error_counter
 
-__version__ = "2025.01.13"
+__version__ = "2025.02.26"
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -46,7 +46,7 @@ app.add_middleware(
 )
 
 # API Key authentication setup
-API_KEY = os.getenv("API_KEY")
+API_KEY = os.getenv("API_KEY", None)
 api_key_header = APIKeyHeader(name="X-API-Key", auto_error=False)
 
 async def verify_api_key(api_key: Optional[str] = Depends(api_key_header)):
