@@ -10,11 +10,8 @@ This repository contains resources for creating production-grade ML inference pr
 - [x] Batch & Online processing
 - [x] Monitoring & Alerting
 - [x] Data drift detection
-
-Future features will include:
-
-- [ ] Security & Safety
-- [ ] Testing
+- [x] Security & Safety
+- [x] Testing
 
 ## Running the default processors
 
@@ -106,11 +103,20 @@ Common Causes are seasonal changes, changes in data collection methods, populati
 
 You can use the `DRIFT_DETECTION` environment variable to enable drift detection. This will add a `DriftDetector` for each model. By default, the drift detector will monitor the input size for a given number of requests and report mean values with Prometheus (which can be visualized in Grafana and used to set alerts). Feel free to modify the `src/drift.py` file to monitor other metrics or to implement a different drift detection algorithm.
 
+### Security
+
+The API contains several security features:
+
+- API Key authentication
+- Rate limiting
+
+In order to require an API key, set the `API_KEY` environment variable to the desired key.
+
+In order to enable rate limiting, set the `RATE_LIMIT` environment variable to the desired rate limit (e.g., `10/minute`).
+
 ## Building a new processor
 
 This repository offers functionality for creating production-grade APIs to perform inference on ML models. 
-
-
 
 ### Developing locally
 
@@ -242,3 +248,13 @@ To run the api in a cloud kubernetes cluster, you should follow the same steps a
 - Change the service type to `LoadBalancer` or `ClusterIP` in the deployment manifests service section.
 - Use a cloud provider that supports gpu nodes (if you want to use the gpu version).
 - Use `ingress.yaml` to expose the api to the internet instead of port forwarding.
+
+### Testing
+
+You can run the tests with:
+
+```bash
+docker-compose -f docker-compose.test.yaml
+```
+
+You can add more tests to the `api/tests` folder.

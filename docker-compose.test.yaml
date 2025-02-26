@@ -1,0 +1,14 @@
+version: "3"
+
+services:
+  ml-inference-test:
+    build:
+      context: ./api
+      dockerfile: Dockerfile.test
+    image: ml-inference-test
+    container_name: ml-inference-test
+    volumes:
+      - ./api:/app/api
+    env_file:
+      - .env
+    command: uv run ptw api/tests -- -v
