@@ -17,5 +17,4 @@ services:
       - EOTDL_DOWNLOAD_PATH=/tmp
     env_file:
       - .env
-    # command: uv run uvicorn api.main:app --host 0.0.0.0 --reload --port 8000
-    command: ls -la api
+    command: uv run uvicorn api.main:app --host 0.0.0.0 --reload --port 8000
