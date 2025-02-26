@@ -21,8 +21,6 @@ from api.src.metrics import model_counter, model_error_counter
 
 __version__ = "2025.01.13"
 
-hola
-
 limiter = Limiter(key_func=get_remote_address)
 app = FastAPI(
 	title="ml-inference",
