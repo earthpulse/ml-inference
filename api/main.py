@@ -16,7 +16,7 @@ from slowapi.util import get_remote_address
 from slowapi.errors import RateLimitExceeded
 import logging
 import traceback
-
+import json
 from api.src.eotdl_wrapper import ModelWrapper
 from api.src.batch import BatchProcessor
 from api.src.drift import DriftDetector
@@ -170,10 +170,10 @@ async def retrieve_model_metadata(
 	version: int = None,
 	api_key: str = Depends(verify_api_key)
 ):
-	try:
+	# try:
 		model = ModelWrapper(model, path=DOWNLOAD_PATH, version=version)
-		return model.gdf.to_json()
-	except Exception as e:
-		logger.error(f"Error in retrieve_model_metadata: {e}")
-		traceback.print_exc()
-		raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail=str(e))
+		return model.items()
+	# except Exception as e:
+	# 	logger.error(f"Error in retrieve_model_metadata: {e}")
+	# 	traceback.print_exc()
+	# 	raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail=str(e))

@@ -2,7 +2,7 @@ import os
 import requests
 import geopandas as gpd
 import numpy as np
-
+import io
 
 EOTDL_API_URL = "https://api.eotdl.com/"
 EOTDL_API_KEY = os.getenv("EOTDL_API_KEY")
@@ -19,30 +19,40 @@ def retrieve_model(name):
     return format_response(response)
 
 
-def retrieve_model_stac(model_id, version):
-    url = f"{EOTDL_API_URL}models/{model_id}/download"
+def retrieve_model_catalog(model_id, version):
+    url = f"{EOTDL_API_URL}models/{model_id}/stage/catalog.v{version}.parquet"
     headers = {"X-API-Key": EOTDL_API_KEY}
     response = requests.get(url, headers=headers)
     data, error = format_response(response)
-    if data:
-        return gpd.GeoDataFrame.from_features(response.json()["features"]), None
-    return data, error
+    if error:
+        return None, error
+    presigned_url = data["presigned_url"]
+    # get parquet file from presigned url and load as geopandas dataframe
+    response = requests.get(presigned_url)
+    if response.status_code != 200:
+        return None, f"Failed to download parquet file: {response.status_code}"
+    # Load parquet from memory buffer
+    parquet_buffer = io.BytesIO(response.content)
+    gdf = gpd.read_parquet(parquet_buffer)
+    return gdf, None
 
 
-def download_file_url(url, filename, path):
+def download_file_url(url, path):
+    file_name = url.split("/stage/")[-1] 
+    file_path = f"{path}/{file_name}"
+    for i in range(1, len(file_path.split("/")) - 1):
+        os.makedirs("/".join(file_path.split("/")[: i + 1]), exist_ok=True)
     headers = {"X-API-Key": EOTDL_API_KEY}
-    path = f"{path}/{filename}"
-    for i in range(1, len(path.split("/")) - 1):
-        os.makedirs("/".join(path.split("/")[: i + 1]), exist_ok=True)
-    with requests.get(url, headers=headers, stream=True) as r:
-        r.raise_for_status()
-        total_size = int(r.headers.get("content-length", 0))
-        block_size = 1024 * 1024 * 10
-        with open(path, "wb") as f:
-            for chunk in r.iter_content(block_size):
-                if chunk:
-                    f.write(chunk)
-        return path
+    response = requests.get(url, headers=headers)
+    data, error = format_response(response)
+    if error:
+        return None, error
+    presigned_url = data["presigned_url"]
+    response = requests.get(presigned_url)
+    response.raise_for_status()  # This will raise an HTTPError for 4XX and 5XX status codes
+    with open(file_path, 'wb') as f:
+        f.write(response.content)
+    return file_path
 
 
 def sigmoid(x):

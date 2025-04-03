@@ -1,8 +1,8 @@
-FROM python:3.8-slim
+FROM python:3.12-slim
 
 WORKDIR /app
 
-RUN apt-get update -y && apt-get install -y curl
+RUN apt-get update -y && apt-get install -y curl g++ gdal-bin libgdal-dev
 
 RUN curl -LsSf https://astral.sh/uv/install.sh | sh
 
@@ -14,8 +14,8 @@ RUN uv venv
 
 # RUN apt-get update -y && apt-get install -y g++ gdal-bin libgdal-dev
 
-# ENV CPLUS_INCLUDE_PATH=/usr/include/gdal
-# ENV C_INCLUDE_PATH=/usr/include/gdal
+ENV CPLUS_INCLUDE_PATH=/usr/include/gdal
+ENV C_INCLUDE_PATH=/usr/include/gdal
 
 # RUN pip install --global-option=build_ext --global-option="-I/usr/include/gdal" GDAL==`gdal-config --version`
 

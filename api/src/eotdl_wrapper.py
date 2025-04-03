@@ -10,13 +10,12 @@ from tqdm import tqdm
 import numpy as np
 import onnxruntime as ort
 from skimage.transform import resize
+import geopandas as gpd
+import pyarrow.parquet as pq
+import stac_geoparquet
+import pystac
 
-from .utils import retrieve_model, retrieve_model_stac, download_file_url
-from .dataframe import STACDataFrame
-
-# from ..curation.stac import STACDataFrame
-# from ..repos import FilesAPIRepo, ModelsAPIRepo
-# from ..auth import with_auth
+from .utils import retrieve_model, retrieve_model_catalog, download_file_url
 
 class ModelWrapper:
     def __init__(self, model_name, version=None, path=None, force=False, assets=True, verbose=True):
@@ -32,14 +31,13 @@ class ModelWrapper:
     def setup(self):
         download_path, gdf = self.download()
         self.download_path = download_path
+        self.gdf_path = download_path + f"/catalog.v{self.version}.parquet"
         self.gdf = gdf
-        # get model name from stac metadata
-        item = gdf[gdf['type'] == "Feature"]
-        assert item.shape[0] == 1, "Only one item is supported in stac metadata, found " + str(item.shape[0])
-        self.props = item.iloc[0].properties
-        assert self.props["mlm:framework"] == "ONNX", "Only ONNX models are supported, found " + self.props["mlm:framework"]
-        model_name = self.props["mlm:name"]
-        self.model_path = download_path + '/assets/' + model_name
+        # get model name from metadata
+        assert gdf.shape[0] == 1, "Only one item is supported in metadata, found " + str(gdf.shape[0])
+        assert gdf["mlm:framework"].iloc[0] == "ONNX", "Only ONNX models are supported, found " + gdf["mlm:framework"].iloc[0]
+        self.model_path = download_path + '/' + gdf["mlm:name"].iloc[0]
+        self.props = gdf.iloc[0]
         self.ready = True
 
     def predict(self, x):
@@ -64,8 +62,6 @@ class ModelWrapper:
         model, error = retrieve_model(self.model_name)
         if error:
             raise Exception(error)
-        if model["quality"] < 2:
-            raise Exception("Only Q2+ models are supported")
         if self.version is None:
             self.version = sorted(model["versions"], key=lambda v: v["version_id"])[-1][
                 "version_id"
@@ -78,42 +74,30 @@ class ModelWrapper:
             "EOTDL_DOWNLOAD_PATH", str(Path.home()) + "/.cache/eotdl/models"
         )
         if self.path is None:
-            download_path = download_base_path + "/" + self.model_name + "/v" + str(self.version)
+            download_path = download_base_path + "/" + self.model_name
         else:
-            download_path = self.path + "/" + self.model_name + "/v" + str(self.version)
+            download_path = self.path + "/" + self.model_name
+        print("hola", download_path)
         # check if model already exists
-        if os.path.exists(download_path) and not self.force:
-            os.makedirs(download_path, exist_ok=True)
-            gdf = STACDataFrame.from_stac_file(download_path + f"/{self.model_name}/catalog.json")
+        os.makedirs(download_path, exist_ok=True)
+        catalog_path = download_path + f"/catalog.v{self.version}.parquet"
+        if os.path.exists(catalog_path) and not self.force:
+            gdf = gpd.read_parquet(catalog_path)
             return download_path, gdf
         if self.verbose:
-            print("Downloading STAC metadata...")
-        # repo = ModelsAPIRepo()
-        # gdf, error = repo.download_stac(
-        #     model["id"],
-        #     user,
-        # )
-        gdf, error = retrieve_model_stac(model["id"], self.version)
+            print("Downloading model...")
+        gdf, error = retrieve_model_catalog(model["id"], self.version)
         if error:
             raise Exception(error)
-        df = STACDataFrame(gdf)
-        # df.geometry = df.geometry.apply(lambda x: Polygon() if x is None else x)
-        df.to_stac(download_path)
+        gdf.to_parquet(download_path + f"/catalog.v{self.version}.parquet")
         # download assets
         if self.assets:
             if self.verbose:
                 print("Downloading assets...")
-            # repo = FilesAPIRepo()
-            df = df.dropna(subset=["assets"])
-            for row in tqdm(df.iterrows(), total=len(df)):
-                for k, v in row[1]["assets"].items():
+            for _, row in tqdm(gdf.iterrows(), total=len(gdf)):
+                for k, v in row["assets"].items():
                     href = v["href"]
-                    _, filename = href.split("/download/")
-                    # will overwrite assets with same name :(
-                    # repo.download_file_url(
-                    #     href, filename, f"{download_path}/assets", user
-                    # )
-                    download_file_url(href, filename, f"{download_path}/assets")
+                    download_file_url(href, download_path)
         else:
             print("To download assets, set assets=True.")
         if self.verbose:
@@ -121,6 +105,7 @@ class ModelWrapper:
         return download_path, gdf
 
     def process_inputs(self, x):
+        print("hola", self.props["mlm:input"])
         # pre-process and validate input
         input = self.props["mlm:input"]
         # input data type
@@ -175,3 +160,11 @@ class ModelWrapper:
         except Exception as e:
             raise RuntimeError(f"Error loading ONNX model: {str(e)}")
         return session
+    
+    def items(self):
+        table = pq.read_table(self.gdf_path)
+        items = []
+        for item in tqdm(stac_geoparquet.arrow.stac_table_to_items(table), total=len(table)):
+            # item = pystac.Item.from_dict(item)
+            items.append(item)
+        return items

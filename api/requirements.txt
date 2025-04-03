@@ -13,3 +13,5 @@ tqdm
 scikit-image
 prometheus-fastapi-instrumentator==6.0.0
 slowapi
+pyarrow
+stac-geoparquet
