@@ -15,7 +15,7 @@ ENV PATH="/root/.local/bin:${PATH}"
 
 WORKDIR /app
 
-RUN uv venv --python 3.10
+RUN uv venv --python 3.12
 
 COPY requirements.txt requirements.txt
 RUN uv pip install -r requirements.txt

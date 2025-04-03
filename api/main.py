@@ -127,7 +127,7 @@ async def inference(
 		)
 		# return outputs
 		if model_wrapper.props["mlm:output"]["tasks"] == ["classification"]:
-			return outputs
+			return outputs.tolist()
 		elif model_wrapper.props["mlm:output"]["tasks"] == ["segmentation"]:  # only returns first output as image
 			# return mask
 			# image = sigmoid(outputs) > 0.5  # this should be defined in the model metadata
@@ -170,10 +170,10 @@ async def retrieve_model_metadata(
 	version: int = None,
 	api_key: str = Depends(verify_api_key)
 ):
-	# try:
+	try:
 		model = ModelWrapper(model, path=DOWNLOAD_PATH, version=version)
 		return model.items()
-	# except Exception as e:
-	# 	logger.error(f"Error in retrieve_model_metadata: {e}")
-	# 	traceback.print_exc()
-	# 	raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail=str(e))
+	except Exception as e:
+		logger.error(f"Error in retrieve_model_metadata: {e}")
+		traceback.print_exc()
+		raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail=str(e))

@@ -5,7 +5,10 @@ description = "Add your description here"
 readme = "README.md"
 requires-python = ">=3.9"
 dependencies = [
+    "aiohttp>=3.11.16",
     "jupyter>=1.1.1",
     "matplotlib>=3.9.4",
     "pillow>=11.1.0",
+    "rasterio>=1.4.3",
+    "scikit-image>=0.24.0",
 ]

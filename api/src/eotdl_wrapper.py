@@ -13,7 +13,6 @@ from skimage.transform import resize
 import geopandas as gpd
 import pyarrow.parquet as pq
 import stac_geoparquet
-import pystac
 
 from .utils import retrieve_model, retrieve_model_catalog, download_file_url
 
@@ -45,7 +44,7 @@ class ModelWrapper:
             self.setup()
         ort_session = self.get_onnx_session(self.model_path)
         # preprocess input
-        x = self.process_inputs(x)
+        # x = self.process_inputs(x)
         # execute model
         print("executing model with input shape", x.shape)
         input_name = ort_session.get_inputs()[0].name
@@ -56,7 +55,6 @@ class ModelWrapper:
         # format and return outputs
         return self.return_outputs(ort_outs, output_names)
 
-    # @with_auth
     def download(self, user=None):
         # download the model
         model, error = retrieve_model(self.model_name)
@@ -77,7 +75,6 @@ class ModelWrapper:
             download_path = download_base_path + "/" + self.model_name
         else:
             download_path = self.path + "/" + self.model_name
-        print("hola", download_path)
         # check if model already exists
         os.makedirs(download_path, exist_ok=True)
         catalog_path = download_path + f"/catalog.v{self.version}.parquet"
@@ -105,7 +102,6 @@ class ModelWrapper:
         return download_path, gdf
 
     def process_inputs(self, x):
-        print("hola", self.props["mlm:input"])
         # pre-process and validate input
         input = self.props["mlm:input"]
         # input data type
@@ -140,12 +136,9 @@ class ModelWrapper:
     
     def return_outputs(self, ort_outputs, output_names):
         if self.props["mlm:output"]["tasks"] == ["classification"]:
-            return {
-                "model": self.model_name,
-                **{
-                    output: ort_outputs[i].tolist() for i, output in enumerate(output_names)
-                },
-            }
+            outputs = {output: ort_outputs[i] for i, output in enumerate(output_names)}
+            batch = outputs[output_names[0]]
+            return batch
         elif self.props["mlm:output"]["tasks"] == ["segmentation"]:
             outputs = {output: ort_outputs[i] for i, output in enumerate(output_names)}
             batch = outputs[output_names[0]]
