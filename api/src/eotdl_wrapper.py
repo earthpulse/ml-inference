@@ -33,7 +33,10 @@ class ModelWrapper:
         self.gdf_path = download_path + f"/catalog.v{self.version}.parquet"
         self.gdf = gdf
         # get model name from metadata
-        assert gdf.shape[0] == 1, "Only one item is supported in metadata, found " + str(gdf.shape[0])
+        # Only allow one item with .onnx extension
+        onnx_items = gdf[gdf["id"].str.endswith(".onnx")]
+        assert onnx_items.shape[0] == 1, f"Only one .onnx item is supported in metadata, found {onnx_items.shape[0]}"
+        gdf = onnx_items
         assert gdf["mlm:framework"].iloc[0] == "ONNX", "Only ONNX models are supported, found " + gdf["mlm:framework"].iloc[0]
         self.model_path = download_path + '/' + gdf["mlm:name"].iloc[0]
         self.props = gdf.iloc[0]

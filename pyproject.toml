@@ -6,9 +6,15 @@ readme = "README.md"
 requires-python = ">=3.9"
 dependencies = [
     "aiohttp>=3.11.16",
+    "eotdl>=2025.4.2",
+    "geopandas>=1.0.1",
     "jupyter>=1.1.1",
     "matplotlib>=3.9.4",
+    "minio>=7.2.16",
     "pillow>=11.1.0",
+    "pyarrow>=21.0.0",
+    "python-dotenv>=1.1.1",
     "rasterio>=1.4.3",
     "scikit-image>=0.24.0",
+    "tqdm>=4.67.1",
 ]
