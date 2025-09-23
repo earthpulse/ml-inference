@@ -22,7 +22,7 @@ from api.src.batch import BatchProcessor
 from api.src.drift import DriftDetector
 from api.src.metrics import model_counter, model_error_counter
 
-__version__ = "2025.02.26"
+__version__ = "2025.04.03"
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
