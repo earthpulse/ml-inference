@@ -66,12 +66,15 @@ async def verify_api_key(api_key: Optional[str] = Depends(api_key_header)):
 	return api_key
 
 @app.get("/")
-async def hello():
-	return {
-		"message": "Hello from the ml-inference API!",
-		"version": __version__,
-		"auth_required": API_KEY is not None
-	}
+async def hello(request: Request):
+	if "text/html" in request.headers.get("accept"):
+		return StreamingResponse(open("api/index.html", "rb"), media_type="text/html")
+	else:
+		return {
+			"message": "Hello from the ml-inference API!",
+			"version": __version__,
+			"auth_required": API_KEY is not None
+		}
 
 DOWNLOAD_PATH = os.getenv("EOTDL_DOWNLOAD_PATH", "/tmp")
 BATCH_SIZE = int(os.getenv("BATCH_SIZE", 1))
