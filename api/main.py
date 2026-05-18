@@ -6,7 +6,6 @@ from starlette.responses import StreamingResponse
 import rasterio as rio
 import io
 import os
-from PIL import Image
 from skimage.transform import resize
 from typing import Dict, Optional
 import asyncio
@@ -21,6 +20,7 @@ from api.src.eotdl_wrapper import ModelWrapper
 from api.src.batch import BatchProcessor
 from api.src.drift import DriftDetector
 from api.src.metrics import model_counter, model_error_counter
+from api.src.cog import array_to_cog_bytes, to_binary_mask
 
 __version__ = "2025.09.23"
 
@@ -107,9 +107,11 @@ async def inference(
 				batch_size=BATCH_SIZE,
 				timeout=BATCH_TIMEOUT,
 			)
-		# load image in memory as numpy array
+		# load image in memory as numpy array (keep georef for COG output)
 		with rio.open(io.BytesIO(image.file.read())) as src:
 			image = src.read()
+			src_crs = src.crs
+			src_transform = src.transform
 		if DRIFT_DETECTION == 'true':
 			if model not in drift_detector:
 				drift_detector[model] = DriftDetector(model)
@@ -137,12 +139,10 @@ async def inference(
 			if outputs.ndim == 3:  # get first band
 				outputs = outputs[0]
 			outputs = resize(outputs, model_wrapper.original_size, preserve_range=True)
-			# outputs = outputs.astype(np.uint8)
-			img = Image.fromarray(outputs, mode="F")  # only returns binary mask
-			buf = io.BytesIO()
-			img.save(buf, "tiff")
-			buf.seek(0)
-			return StreamingResponse(buf, media_type="image/tiff") # TODO: should be COG
+			mask = to_binary_mask(outputs)
+			cog_bytes = array_to_cog_bytes(mask, src_crs, src_transform, dtype="uint8")
+			buf = io.BytesIO(cog_bytes)
+			return StreamingResponse(buf, media_type="image/tiff")
 		else:
 			raise Exception(
 				"Output task not supported", model.props["mlm:output"]["tasks"]
