@@ -12,6 +12,7 @@ This repository contains resources for creating production-grade ML inference pr
 - [x] Data drift detection
 - [x] Security & Safety
 - [x] Testing
+- [x] COG output for segmentation models
 
 ## Running the default processors
 
@@ -113,6 +114,61 @@ The API contains several security features:
 In order to require an API key, set the `API_KEY` environment variable to the desired key.
 
 In order to enable rate limiting, set the `RATE_LIMIT` environment variable to the desired rate limit (e.g., `10/minute`).
+
+## COG output (segmentation)
+
+Segmentation models (`mlm:output.tasks == ["segmentation"]`) return a **binary road mask** as a [Cloud Optimized GeoTIFF](https://gdal.org/en/stable/drivers/raster/cog.html) (`Content-Type: image/tiff`).
+
+Implementation: `api/src/cog.py` (GDAL `COG` driver via rasterio) and `api/main.py`.
+
+### Response format
+
+| Property | Value |
+|----------|--------|
+| Media type | `image/tiff` |
+| Format | COG (GDAL driver) |
+| Bands | 1 |
+| Dtype | `uint8` (0 = background, 1 = road) |
+| Compression | DEFLATE |
+| Georeferencing | CRS and transform copied from the input when the input is a georeferenced raster |
+
+The model output is thresholded (`> 0.5`) into a binary mask before writing the COG. If values are already in `[0, 1]`, they are used as probabilities; otherwise a sigmoid is applied first.
+
+### Input requirements
+
+- The image must be readable by rasterio (GeoTIFF, PNG, JPEG, etc.).
+- Models such as `MassachusettsRoadsS2Model` expect **3 RGB bands**. Multispectral tiles (e.g. 12-band Sentinel-2) must be reduced to 3 bands before upload (see `examples/03_cog_output_demo.ipynb`).
+- **Georeferenced output** requires a georeferenced input (GeoTIFF with CRS and transform). PNG/JPG inputs produce a valid COG without CRS.
+
+### Example request
+
+```bash
+curl -X POST "http://localhost:8000/MassachusettsRoadsS2Model" \
+  -H "X-API-Key: <api_key>" \
+  -F "image=@path/to/input_rgb.tif" \
+  --output mask_cog.tif
+```
+
+Inspect the result:
+
+```python
+import rasterio as rio
+
+with rio.open("mask_cog.tif") as src:
+    print(src.crs, src.dtypes, src.read(1).min(), src.read(1).max())
+```
+
+### Demo notebook
+
+Run `make run-cpu` (or `docker-compose -f docker-compose.cpu.yaml up`), then open and run:
+
+```text
+examples/03_cog_output_demo.ipynb
+```
+
+It prepares a 3-band RGB GeoTIFF from a Sentinel-2 sample, calls the local API, checks CRS/dtype, saves `examples/outputs/mask_cog.tif`, and displays the mask.
+
+Classification models are unchanged: they still return JSON, not a COG.
 
 ## Building a new processor
 
