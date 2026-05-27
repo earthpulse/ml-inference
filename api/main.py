@@ -22,7 +22,7 @@ from api.src.drift import DriftDetector
 from api.src.metrics import model_counter, model_error_counter
 from api.src.cog import array_to_cog_bytes, to_binary_mask
 
-__version__ = "2025.09.23"
+__version__ = "2026.05.27"
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
