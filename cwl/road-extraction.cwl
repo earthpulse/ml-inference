@@ -3,28 +3,33 @@ class: CommandLineTool
 
 label: AI Road Extraction
 doc: >
-  Road mask for a 3-band RGB GeoTIFF.
+  Road mask for a 3-band RGB GeoTIFF already staged by the platform.
   Process id on the DPH must be "road-extraction" (the hub loads
   {processID}.cwl from its cwl_dir).
-  `url` is not a user input: the hub injects it from the process
-  link rel="service", the inference API MEEO already operates.
-  PENDING TBD: that service URL, and how the COG is returned.
-  The hub json-loads `result` and drops the file, so mask.tif is not
-  in the job until output transmission is agreed.
+  EarthPulse does not download the STAC catalogue and does not publish
+  results. MEEO stage-in fills `staged`; MEEO stage-out publishes
+  `stac_catalog`.
 
 baseCommand: python3
 arguments: [road-extraction_processor.py]
 
 requirements:
+  NetworkAccess:
+    networkAccess: true
   InitialWorkDirRequirement:
     listing:
       - class: File
         location: road-extraction_processor.py
 
 inputs:
-  image_url:
-    type: string
-    doc: URL of a 3-band RGB GeoTIFF. Execution accepts JSON only.
+  staged:
+    type: Directory
+    label: Staged STAC item
+    doc: >
+      PENDING MEEO (stage-in): Directory produced from a GDA STAC item
+      link. Must contain catalog.json and the RGB GeoTIFF as a local
+      file. Do not pass image_url. Optional env ROAD_ASSET_KEY selects
+      the asset key; empty means the first local image/tiff.
     inputBinding:
       position: 1
   model:
@@ -34,17 +39,36 @@ inputs:
       position: 2
   url:
     type: string
+    label: Inference API base URL
+    doc: >
+      PENDING MEEO: not a user input. The hub injects this from the
+      process link rel="service" (base URL, without the model name).
+      The process POSTs the GeoTIFF to {url}/{model}, file field "image".
+      If that API requires a key, set API_KEY in the DPH environment
+      (sent as X-API-Key).
     inputBinding:
       position: 3
 
 outputs:
+  stac_catalog:
+    type: Directory
+    outputBinding:
+      glob: stac_catalog
+    label: Results STAC catalog
+    doc: >
+      PENDING MEEO (stage-out): local catalog ready to publish.
+      Layout is catalog.json, one item, asset key "road-mask"
+      (road-mask.tif). Confirm that key, the collection id and the
+      license before wiring stage-out.
   result:
     type: File
     outputBinding:
       glob: output.json
-  mask:
-    type: File?
-    outputBinding:
-      glob: mask.tif
+    doc: >
+      PENDING MEEO: the DPH runner still json-loads the output named
+      "result" (lib/cwl_runner.py read_cwl_file) and then deletes the
+      file. This JSON is only a short pointer (item id, asset key,
+      byte size) so that runner does not break. Stage-out must use
+      stac_catalog. Drop this output once the hub accepts a Directory.
 
 stdout: output.json
